@@ -1,4 +1,7 @@
 const express = require("express");
+const bcrypt = require("bcryptjs")  
+
+
 
 const app = express();
 
@@ -15,7 +18,47 @@ app.get("/login",function(req,res){
 app.post("/login",function(req,res){
 
 
-    res.send(req.body);
+    //hitta användare
+
+    const users = require("./users")
+
+    const user = users.filter(function(u){
+
+        if(req.body.email === u.email){
+
+            return true
+        }
+    })
+
+// om vi har exakt en användare med rätt emial
+   if(user.length === 1){
+
+    //kolla lösenord
+
+    bcrypt.compare(req.body.password, users[0].password, function(err,success){
+
+
+        if(success){
+            res.send("login success!")
+
+        }
+        else{
+            res.send("wrong password")
+        }
+
+
+    })
+
+
+
+
+
+
+   }
+   else {
+       res.send("no such user")
+   }
+    
 
 
     /**
