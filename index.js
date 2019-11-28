@@ -5,14 +5,14 @@ const bcrypt = require("bcryptjs")
 const cookieParser = require("cookie-parser")
 const secret = require("./secret")
 const jwt = require("jsonwebtoken")
-
+const auth = require("./auth")
 const app = express();
 
 app.use(express.urlencoded({extended:false}));
 app.use(cookieParser())
 
-app.get("/",function(req,res){
-    res.send(req.cookiesnode);
+app.get("/",auth, function(req,res){
+    res.send(req.cookies);
 });
 
 app.get("/login",function(req,res){
@@ -44,11 +44,11 @@ app.post("/login",function(req,res){
 
         if(success){
 
-           //  res.cookie("auth",true,{httpOnly:true, sameSite:"strict"} )
+           //  
 
            
-           const token = jwt.sign({email:user[0].email}, secret, {expiresIn:"60"})
-
+           const token = jwt.sign({email:user[0].email}, secret, {expiresIn:60})
+            res.cookie("token",token,{httpOnly:true, sameSite:"strict"} )
             res.send("login success!")
 
         }
